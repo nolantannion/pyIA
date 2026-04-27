@@ -246,7 +246,7 @@ class TestEnv1(FastGradEnv):
         return self._obs(), {}
     
 
-def evaluate(model, env, n_episodes=20, plot_hist=True, max_trials=500):
+def evaluate(model, env, n_episodes=20, plot_hist=True, max_trials=500, seed = None):
     """
     Evalúa el modelo usando SOLO trayectorias exitosas.
     Ejecuta episodios hasta obtener n_episodes éxitos.
@@ -258,6 +258,7 @@ def evaluate(model, env, n_episodes=20, plot_hist=True, max_trials=500):
     - n_episodes (opc): evaluaciones
     - plot_hist (opc): muestra un histograma de energias 
     - max_trials (opc): maximo numero de intentos para alcanzar los exitos totales
+    - seed (opc): semilla para los numeros pseudoaleatorios
 
     RETURNS:
 
@@ -279,10 +280,15 @@ def evaluate(model, env, n_episodes=20, plot_hist=True, max_trials=500):
     successes = 0
     trials = 0
 
+    if seed == None:
+        seed = np.random.randint(0,100_000, 1)
+
+    i_random = 0
+
     while successes < n_episodes and trials < max_trials:
         trials += 1
 
-        obs, _ = env.reset()
+        obs, _ = env.reset(seed = seed + i_random)
         start = env.pos.copy()
         goal = env.goal.copy()
 
@@ -293,7 +299,7 @@ def evaluate(model, env, n_episodes=20, plot_hist=True, max_trials=500):
         term = False
 
         while not done:
-            action, _ = model.predict(obs.reshape(1, -1), deterministic=False)
+            action, _ = model.predict(obs.reshape(1, -1), deterministic=True)
             action = action[0]
 
             obs, r, term, trunc, _ = env.step(action)
@@ -303,10 +309,13 @@ def evaluate(model, env, n_episodes=20, plot_hist=True, max_trials=500):
             done = term or trunc
 
         if not term:
+            i_random += 1
             continue  # ignorar episodio fallido
 
         # -------- solo éxitos --------
         successes += 1
+        i_random += 1
+
 
         traj = np.array(traj)
 
