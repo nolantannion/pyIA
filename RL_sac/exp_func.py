@@ -281,7 +281,7 @@ def evaluate(model, env, n_episodes=20, plot_hist=True, max_trials=500, seed = N
     trials = 0
 
     if seed == None:
-        seed = np.random.randint(0,100_000, 1)
+        seed = np.random.randint(0,10_000_000, 1)
 
     i_random = 0
 
