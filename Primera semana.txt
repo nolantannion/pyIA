@@ -1,0 +1,7 @@
+Cosas que tener claras para esta semana:
+
+- Modelo de ML:
+
+  - Pérdida -> Optimización
+  - Hiperparámetros -> Validación
+  - Train/Test
